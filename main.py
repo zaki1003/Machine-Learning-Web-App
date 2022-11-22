@@ -14,16 +14,17 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 import plotly.express as px
+import collections
 
 
 
 
 @st.cache
 def loadData():
-    df = pd.read_csv("/brain_stroke 3.csv")
-    
+    df = pd.read_csv("/brain_stroke.csv")
+    df2 = df
     df=df.sample(frac=1).reset_index(drop=True)
-    df2=df
+
     df['gender'] = pd.Categorical(df['gender']).codes
     df['ever_married'] = pd.Categorical(df['ever_married']).codes
     df['work_type'] = pd.Categorical(df['work_type']).codes
@@ -235,7 +236,7 @@ def main():
             if (st.checkbox(
                     "Want to predict on your own Input? It is recommended to have a look at dataset to enter values in below tabs than just typing in random values")):
                 user_prediction_data = accept_user_data(data2)
-                st.write(user_prediction_data)
+                #st.write(user_prediction_data)
                 pred = tree.predict(user_prediction_data)
                 stroke_decoding(pred)   # Inverse transform to get the original dependent value.
         except:
@@ -320,18 +321,17 @@ def main():
     elif(choose_viz == "Total number of person that have a heart diseases with the risk of brain stroke") :
         fig = px.histogram(data[data.stroke==1]['heart_disease'], x ='heart_disease')
         st.plotly_chart(fig)
-    elif(choose_viz == "Countribution of smoking status"):
-        plot = data[data.stroke==1]['smoking_status'].plot.pie(y='mass', figsize=(5, 5))
-        data[data.stroke==1].groupby(['smoking_status']).sum().plot(kind='pie')
-        #fig = px.histogram(data['Member type'], x ='Member type')
-        fig, ax = plt.subplots()
-        ax = data[data.stroke==1].groupby(['smoking_status']).sum().plot(kind='pie')
-        #ax.pie(sorted(data[data.stroke==1]['smoking_status'].values) )
-        ax.axis('equal') 
-        st.pyplot(fig)
+    elif(choose_viz == "Countribution of smoking status"):         
+        topic = ['Unknown', 'never smoked',  'formerly smoked','smokes']
+        counter = collections.Counter(data2[data2.stroke==1]['smoking_status'])
+        sizes = list(counter.values())
+        labels = list(counter.keys())
+        fig1, ax1 = plt.subplots()
 
-# plt.hist(data['Member type'], bins=5)
-# st.pyplot()
+        ax1.pie(sizes, explode=None, labels=labels, autopct='%1.1f%%', shadow=True, startangle=90)
+        ax1.axis('equal')
+        st.pyplot(fig1)
+
 
 if __name__ == "__main__":
     main()
