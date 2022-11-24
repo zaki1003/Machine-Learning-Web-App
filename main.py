@@ -21,32 +21,22 @@ import collections
 
 @st.cache
 def loadData():
-    df = pd.read_csv("/content/Assignment-2_Data.csv")
+    df = pd.read_csv("/brain_stroke.csv")
     df2 = df
     df=df.sample(frac=1).reset_index(drop=True)
 
-    df['job'] = pd.Categorical(df['job']).codes
-    df['marital'] = pd.Categorical(df['marital']).codes
-    df['education'] = pd.Categorical(df['education']).codes
-    df['default'] = pd.Categorical(df['default']).codes
-    df['housing'] = pd.Categorical(df['housing']).codes
-    df['loan'] = pd.Categorical(df['loan']).codes
-    df['contact'] = pd.Categorical(df['contact']).codes
-    df['month'] = pd.Categorical(df['month']).codes
-    df['poutcome'] = pd.Categorical(df['poutcome']).codes
-
-    df = df.reset_index()
-    df.replace([np.inf, -np.inf], np.nan, inplace=True)
-    df.fillna(0, inplace=True)
-
-    
+    df['gender'] = pd.Categorical(df['gender']).codes
+    df['ever_married'] = pd.Categorical(df['ever_married']).codes
+    df['work_type'] = pd.Categorical(df['work_type']).codes
+    df['Residence_type'] = pd.Categorical(df['Residence_type']).codes
+    df['smoking_status'] = pd.Categorical(df['smoking_status']).codes
     return df , df2
 
 
 # Basic preprocessing.
 def preprocessing(df):
     # Assign X and y
-    X = df.iloc[:, 1:17].values
+    X = df.iloc[:, 0:10].values
     y = df.iloc[:, -1].values
 
     # y  Categorical data 
@@ -116,7 +106,7 @@ def  smoking_status_encoding(str):
 #@st.cache(suppress_st_warning=True)
 def decisionTree(X_train, X_test, y_train, y_test):
     # Train the model
-    tree = DecisionTreeClassifier(max_leaf_nodes=20, random_state=0)
+    tree = DecisionTreeClassifier(max_leaf_nodes=3, random_state=0)
     tree.fit(X_train, y_train)
     y_pred = tree.predict(X_test)
     score = metrics.accuracy_score(y_test, y_pred) * 100
@@ -215,26 +205,26 @@ def accept_user_data(df):
 
 def main():
     st.title(
-        "Mini Projet Analyse et fouille de données!")
+        "Prediction of brain stroke risk!")
     data,data2 = loadData()
     X_train, X_test, y_train, y_test, le = preprocessing(data)
 
     # Insert Check-Box to show the snippet of the data.
-    if st.checkbox('Voir dataset'):
+    if st.checkbox('Voir le dataset'):
         st.subheader("Dataset  -->>>")
         st.write(data2.head())
         st.write(data.head())
 
     # ML Section
     choose_model = st.sidebar.selectbox("Choisissez le modèle",
-                                        ["NONE", "Decision Tree", "Neural Network", "K-Nearest Neighbours",
+                                        ["NONE", "Arbre de décision", "Neural Network", "K-Nearest Neighbours",
                                          "Naive Bayes"])
 
-    if (choose_model == "Decision Tree"):
+    if (choose_model == "Arbre de décision"):
         score, report, tree, disp = decisionTree(X_train, X_test, y_train, y_test)
-        st.text("Accuracy of Decision Tree model is: ")
+        st.text("Précision du modèle de l'arbre de décision est: ")
         st.write(score, "%")
-        st.text("Report of Decision Tree model is: ")
+        st.text("Report du modèle de l'arbre de décision est: ")
         # st.write(report)
 
         st.text("." + report)
@@ -244,7 +234,7 @@ def main():
 
         try:
             if (st.checkbox(
-                    "Want to predict on your own Input? It is recommended to have a look at dataset to enter values in below tabs than just typing in random values")):
+                    "Prédire des instances manuellement")):
                 user_prediction_data = accept_user_data(data2)
                 #st.write(user_prediction_data)
                 pred = tree.predict(user_prediction_data)
