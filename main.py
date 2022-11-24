@@ -205,7 +205,7 @@ def accept_user_data(df):
 
 def main():
     st.title(
-        "Prediction of brain stroke risk!")
+        "Prediction of brain stroke risk !")
     data,data2 = loadData()
     X_train, X_test, y_train, y_test, le = preprocessing(data)
 
