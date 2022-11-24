@@ -21,22 +21,32 @@ import collections
 
 @st.cache
 def loadData():
-    df = pd.read_csv("/brain_stroke.csv")
+    df = pd.read_csv("/content/Assignment-2_Data.csv")
     df2 = df
     df=df.sample(frac=1).reset_index(drop=True)
 
-    df['gender'] = pd.Categorical(df['gender']).codes
-    df['ever_married'] = pd.Categorical(df['ever_married']).codes
-    df['work_type'] = pd.Categorical(df['work_type']).codes
-    df['Residence_type'] = pd.Categorical(df['Residence_type']).codes
-    df['smoking_status'] = pd.Categorical(df['smoking_status']).codes
+    df['job'] = pd.Categorical(df['job']).codes
+    df['marital'] = pd.Categorical(df['marital']).codes
+    df['education'] = pd.Categorical(df['education']).codes
+    df['default'] = pd.Categorical(df['default']).codes
+    df['housing'] = pd.Categorical(df['housing']).codes
+    df['loan'] = pd.Categorical(df['loan']).codes
+    df['contact'] = pd.Categorical(df['contact']).codes
+    df['month'] = pd.Categorical(df['month']).codes
+    df['poutcome'] = pd.Categorical(df['poutcome']).codes
+
+    df = df.reset_index()
+    df.replace([np.inf, -np.inf], np.nan, inplace=True)
+    df.fillna(0, inplace=True)
+
+    
     return df , df2
 
 
 # Basic preprocessing.
 def preprocessing(df):
     # Assign X and y
-    X = df.iloc[:, 0:10].values
+    X = df.iloc[:, 1:17].values
     y = df.iloc[:, -1].values
 
     # y  Categorical data 
@@ -106,7 +116,7 @@ def  smoking_status_encoding(str):
 #@st.cache(suppress_st_warning=True)
 def decisionTree(X_train, X_test, y_train, y_test):
     # Train the model
-    tree = DecisionTreeClassifier(max_leaf_nodes=3, random_state=0)
+    tree = DecisionTreeClassifier(max_leaf_nodes=20, random_state=0)
     tree.fit(X_train, y_train)
     y_pred = tree.predict(X_test)
     score = metrics.accuracy_score(y_test, y_pred) * 100
@@ -313,7 +323,14 @@ def main():
         except:
             pass
 
-    choose_viz = st.sidebar.selectbox("Choose the Visualization",["NONE","Total number of person married with the risk of brain stroke","Total number of person that have a heart diseases with the risk of brain stroke","Countribution of smoking status"])   
+    choose_viz = st.sidebar.selectbox("Choose the Visualization", 
+    ["NONE",
+    "Total number of person married with the risk of brain stroke",
+    "Total number of person that have a heart diseases with the risk of brain stroke",
+    "Countribution of smoking status",
+    "Countribution of work type",
+    "Countribution of residence type"
+    ,])   
     
     if(choose_viz == "Total number of person married with the risk of brain stroke") :
         fig = px.histogram(data[data.stroke==1]['ever_married'], x ='ever_married')
@@ -327,10 +344,29 @@ def main():
         sizes = list(counter.values())
         labels = list(counter.keys())
         fig1, ax1 = plt.subplots()
-
         ax1.pie(sizes, explode=None, labels=labels, autopct='%1.1f%%', shadow=True, startangle=90)
         ax1.axis('equal')
         st.pyplot(fig1)
+    elif(choose_viz == "Countribution of work type"):         
+        topic = ['Private', 'Self-employed', 'Govt_job', 'children']
+        counter = collections.Counter(data2[data2.stroke==1]['work_type'])
+        sizes = list(counter.values())
+        labels = list(counter.keys())
+        fig1, ax1 = plt.subplots()
+        ax1.pie(sizes, explode=None, labels=labels, autopct='%1.1f%%', shadow=True, startangle=90)
+        ax1.axis('equal')
+        st.pyplot(fig1)
+    elif(choose_viz == "Countribution of residence type"):         
+        topic = ['Rural', 'Urban']
+        counter = collections.Counter(data2[data2.stroke==1]['Residence_type'])
+        sizes = list(counter.values())
+        labels = list(counter.keys())
+        fig1, ax1 = plt.subplots()
+        ax1.pie(sizes, explode=None, labels=labels, autopct='%1.1f%%', shadow=True, startangle=90)
+        ax1.axis('equal')
+        st.pyplot(fig1)
+
+        
 
 
 if __name__ == "__main__":
