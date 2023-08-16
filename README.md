@@ -1,5 +1,5 @@
 # Machine-Learning-Web-App
-Machine Learning Web App using Streamlit. In this web app we used 4 algorithms: Decision Tree, Neural Network, K-Nearest Neighbours, Naive Bayes. It contains also some visualization, which is helpful in analysis and data science.
+Machine Learning Web App built using Streamlit. In this web app we used 4 algorithms: Decision Tree, Neural Network, K-Nearest Neighbours, Naive Bayes. It contains also some visualization, which is helpful in analysis and data science.
 
 ## Screenshots
 ![Screenshot from 2022-11-24 22-55-20](https://user-images.githubusercontent.com/65148928/203862553-d938c792-f6ee-49dd-a96a-85ecdc0c418a.png)
